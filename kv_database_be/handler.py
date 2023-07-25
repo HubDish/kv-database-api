@@ -1,26 +1,25 @@
-from fastapi import FastAPI
+
 from dotenv import load_dotenv
 import os
 import subprocess
 
 load_dotenv()
-app = FastAPI()
 
 db_dir = os.getenv("ROCKSDB_DIR")
 
-@app.get("/live")
-def live():
-    return "I am alive"
+def get_statistics(options = None):
+    raw_results = get_raw_results(options)
 
-@app.get("/test")
-def test():
+    results = raw_results.split("\n")
+    return results
+
+def get_raw_results(options = None):
     command = [db_dir+"/db_bench",
-                "--benchmarks=fillseq"]
+                "--benchmarks=fillseq,stats",
+                "--statistics"]
     try:
         result = subprocess.run(command,capture_output=True,text=True,check=True)
-        var_type = type(result.stdout)
-        print(var_type)
-        return result.stdout.split("\n")
+        return result.stdout
     except subprocess.CalledProcessError as e:
         print(f"Error executing benchmark: {e}")
         print(e.stderr)
