@@ -14,9 +14,11 @@ def get_statistics(options = None):
     return results
 
 def get_raw_results(options = None):
+    # command = [db_dir+"/db_bench",
+    #             "--benchmarks=fillseq,stats",
+    #             "--statistics"]
     command = [db_dir+"/db_bench",
-                "--benchmarks=fillseq,stats",
-                "--statistics"]
+                "--benchmarks=fillseq"]
     try:
         result = subprocess.run(command,capture_output=True,text=True,check=True)
         return result.stdout
