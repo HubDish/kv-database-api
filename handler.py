@@ -1,14 +1,16 @@
-
-from dotenv import load_dotenv
 import os
+import sys
 import subprocess
 
-load_dotenv()
+db_dir = os.getcwd()+"/rocksdb"
+sys.path.append(db_dir+"/tools/advisor")
 
-db_dir = os.getenv("ROCKSDB_DIR")
+from advisor.db_bench_runner import DBBenchRunner
 
 def get_statistics(options = None):
-    raw_results = get_raw_results(options)
+    #raw_results = get_raw_results(options)
+    #db_options = options_parser.DatabaseOptions('test/input_files/OPTIONS-000005')
+    #print(db_options)
 
     results = raw_results.split("\n")
     return results
