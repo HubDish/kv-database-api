@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from handler import get_statistics
-from log import logger
+from kv_database_be.handler import get_statistics
+from kv_database_be.log import logger
 
 app = FastAPI()
 

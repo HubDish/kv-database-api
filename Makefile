@@ -2,4 +2,4 @@ export
 
 fastapi:
 	pip install -r requirements.txt
-	uvicorn main:app --reload
+	uvicorn kv_database_be.main:app --reload

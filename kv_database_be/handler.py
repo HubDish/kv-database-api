@@ -2,7 +2,7 @@ import os
 import sys
 import subprocess
 
-db_dir = os.getcwd()+"/rocksdb"
+db_dir = os.getcwd()+"/../rocksdb"
 sys.path.append(db_dir+"/tools/advisor")
 
 from advisor.db_bench_runner import DBBenchRunner
