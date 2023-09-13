@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from kv_database_be.handler import get_statistics
+from kv_database_be.handler import get_statistics, get_advice
 from kv_database_be.log import logger
 
 app = FastAPI()
@@ -23,3 +23,8 @@ def live():
 def get_stats():
     logger.info("Getting statistics")
     return get_statistics()
+
+@app.get("/get-advice")
+def get_stats():
+    logger.info("Getting advice")
+    return get_advice()

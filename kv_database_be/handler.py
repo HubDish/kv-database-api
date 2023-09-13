@@ -1,19 +1,71 @@
 import os
 import sys
 import subprocess
+from kv_database_be.log import logger
 
-db_dir = os.getcwd()+"/../rocksdb"
-sys.path.append(db_dir+"/tools/advisor")
+db_dir = os.getcwd()+"/rocksdb"
+adv_dir = db_dir+"/tools/advisor"
+sys.path.append(adv_dir)
 
 from advisor.db_bench_runner import DBBenchRunner
+from advisor.rule_parser import RulesSpec
+from advisor.db_log_parser import DatabaseLogs, DataSource
+from advisor.db_options_parser import DatabaseOptions
+from advisor.db_stats_fetcher import LogStatsParser, OdsStatsFetcher
+
+def get_advice(options = None):
+    # Taken from rule_parser_example with minor modifications
+    # initialise the RulesSpec parser
+    rule_spec_parser = RulesSpec(adv_dir+"/advisor/rules.ini")
+    rule_spec_parser.load_rules_from_spec()
+    rule_spec_parser.perform_section_checks()
+
+    # initialize the DatabaseOptions object
+    db_options = DatabaseOptions(adv_dir+"/test/input_files/OPTIONS-000005") #To change
+
+    # Create DatabaseLogs object
+    db_logs = DatabaseLogs(adv_dir+"/test/input_files/LOG-0", db_options.get_column_families())
+
+    # Create the Log STATS object
+    db_log_stats = LogStatsParser(adv_dir+"/test/input_files/LOG-0", 20)
+    data_sources = {
+        DataSource.Type.DB_OPTIONS: [db_options],
+        DataSource.Type.LOG: [db_logs],
+        DataSource.Type.TIME_SERIES: [db_log_stats],
+    }
+    triggered_rules = rule_spec_parser.get_triggered_rules(
+        data_sources, db_options.get_column_families()
+    )
+
+    cleaned_rules = []
+
+    for rule in triggered_rules:
+        add_rule = {}
+        add_rule["rule"] = rule.name
+        add_rule["conditions"] = []
+        add_rule["suggestions"] = []
+        add_rule["scope"] = []
+        for cond_name in rule.conditions:
+            add_rule["conditions"].append(repr(rule_spec_parser.conditions_dict[cond_name]))
+        for sugg_name in rule.suggestions:
+            add_rule["suggestions"].append(repr(rule_spec_parser.suggestions_dict[sugg_name]))
+        if rule.trigger_entities:
+            add_rule["scope"].append(rule.trigger_entities)
+        if rule.trigger_column_families:
+            add_rule["scope"].append(rule.trigger_column_families)
+        cleaned_rules.append(add_rule)
+
+    return cleaned_rules
 
 def get_statistics(options = None):
     #raw_results = get_raw_results(options)
     #db_options = options_parser.DatabaseOptions('test/input_files/OPTIONS-000005')
     #print(db_options)
 
-    results = raw_results.split("\n")
-    return results
+    rule_spec_parser = RulesSpec(adv_dir+"/advisor/rules.ini")
+
+    #results = raw_results.split("\n")
+    #return results
 
 def get_raw_results(options = None):
     # command = [db_dir+"/db_bench",
