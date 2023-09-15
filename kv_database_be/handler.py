@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 from kv_database_be.log import logger
+from kv_database_be.constants import avail_benchmarks, avail_options
 
 db_dir = os.getcwd()+"/rocksdb"
 adv_dir = db_dir+"/tools/advisor"
@@ -21,13 +22,16 @@ def get_advice(options = None):
     rule_spec_parser.perform_section_checks()
 
     # initialize the DatabaseOptions object
-    db_options = DatabaseOptions(adv_dir+"/test/input_files/OPTIONS-000005") #To change
+    # db_options = DatabaseOptions(adv_dir+"/test/input_files/OPTIONS-000005") #To change
+    db_options = DatabaseOptions("/tmp/rocksdbtest-1000/dbbench/OPTIONS-000007") #To change
 
     # Create DatabaseLogs object
-    db_logs = DatabaseLogs(adv_dir+"/test/input_files/LOG-0", db_options.get_column_families())
+    # db_logs = DatabaseLogs(adv_dir+"/test/input_files/LOG-0", db_options.get_column_families())
+    db_logs = DatabaseLogs("/tmp/rocksdbtest-1000/dbbench/LOG", db_options.get_column_families())
 
     # Create the Log STATS object
-    db_log_stats = LogStatsParser(adv_dir+"/test/input_files/LOG-0", 20)
+    # db_log_stats = LogStatsParser(adv_dir+"/test/input_files/LOG-0", 20)
+    db_log_stats = LogStatsParser("/tmp/rocksdbtest-1000/dbbench/LOG", 20)
     data_sources = {
         DataSource.Type.DB_OPTIONS: [db_options],
         DataSource.Type.LOG: [db_logs],
@@ -58,14 +62,10 @@ def get_advice(options = None):
     return cleaned_rules
 
 def get_statistics(options = None):
-    #raw_results = get_raw_results(options)
-    #db_options = options_parser.DatabaseOptions('test/input_files/OPTIONS-000005')
-    #print(db_options)
+    raw_results = get_raw_results(options)
 
-    rule_spec_parser = RulesSpec(adv_dir+"/advisor/rules.ini")
-
-    #results = raw_results.split("\n")
-    #return results
+    results = raw_results.split("\n")
+    return results
 
 def get_raw_results(options = None):
     # command = [db_dir+"/db_bench",
@@ -79,3 +79,16 @@ def get_raw_results(options = None):
     except subprocess.CalledProcessError as e:
         print(f"Error executing benchmark: {e}")
         print(e.stderr)
+
+def get_avail_benchmarks():
+    list_of_benchmarks = []
+    for key in avail_benchmarks:
+        benchmark = {
+            "label": key,
+            "description": avail_benchmarks[key]
+        }
+        list_of_benchmarks.append(benchmark)
+    return list_of_benchmarks
+
+def get_avail_options():
+    return avail_options
