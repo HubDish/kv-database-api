@@ -3,6 +3,7 @@ import sys
 import subprocess
 from kv_database_be.log import logger
 from kv_database_be.constants import avail_benchmarks, avail_options
+from kv_database_be.utils import get_db_path
 
 db_dir = os.getcwd()+"/rocksdb"
 adv_dir = db_dir+"/tools/advisor"
@@ -65,6 +66,7 @@ def get_statistics(options = None):
     raw_results = get_raw_results(options)
 
     results = raw_results.split("\n")
+    db_path = get_db_path(results)
     return results
 
 def get_raw_results(options = None):
