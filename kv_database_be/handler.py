@@ -94,3 +94,8 @@ def get_avail_benchmarks():
 
 def get_avail_options():
     return avail_options
+
+def create_options_file(content):
+    f=open("tmp_options.ini","wb")
+    f.write(content)
+    f.close()
