@@ -62,19 +62,21 @@ def get_advice(options = None):
 
     return cleaned_rules
 
-def get_statistics(options = None):
-    raw_results = get_raw_results(options)
+def get_statistics():
+    raw_results = get_raw_results()
 
     results = raw_results.split("\n")
     db_path = get_db_path(results)
-    return results
+    return raw_results
 
-def get_raw_results(options = None):
+def get_raw_results():
+    benchmark="fillseq"
     # command = [db_dir+"/db_bench",
     #             "--benchmarks=fillseq,stats",
     #             "--statistics"]
     command = [db_dir+"/db_bench",
-                "--benchmarks=fillseq"]
+                "--benchmarks="+benchmark+",stats",
+                "--statistics"]
     try:
         result = subprocess.run(command,capture_output=True,text=True,check=True)
         return result.stdout

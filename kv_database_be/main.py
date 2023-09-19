@@ -21,7 +21,7 @@ def live():
 
 @app.get("/get-statistics")
 def get_stats():
-    logger.info("Getting statistics")
+    logger.info("Getting statistics ")
     return handler.get_statistics()
 
 @app.get("/get-advice")
