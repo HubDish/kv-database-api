@@ -1,0 +1,67 @@
+[
+    {
+        "rule": "stall-too-many-memtables",
+        "conditions": [
+            "LogCondition: stall-too-many-memtables regex: Stopping writes because we have \\d+ immutable memtables \\(waiting for flush\\), max_write_buffer_number is set to \\d+"
+        ],
+        "suggestions": [
+            "Suggestion: inc-bg-flush option : DBOptions.max_background_flushes action : increase suggested_values : ['2']",
+            "Suggestion: inc-write-buffer option : CFOptions.max_write_buffer_number action : increase"
+        ],
+        "scope": [
+            [
+                "default"
+            ]
+        ]
+    },
+    {
+        "rule": "stall-too-many-L0",
+        "conditions": [
+            "LogCondition: stall-too-many-L0 regex: Stalling writes because we have \\d+ level-0 files"
+        ],
+        "suggestions": [
+            "Suggestion: inc-max-subcompactions option : DBOptions.max_subcompactions action : increase",
+            "Suggestion: inc-max-bg-compactions option : DBOptions.max_background_compactions action : increase suggested_values : ['2']",
+            "Suggestion: inc-write-buffer-size option : CFOptions.write_buffer_size action : increase",
+            "Suggestion: dec-max-bytes-for-level-base option : CFOptions.max_bytes_for_level_base action : decrease",
+            "Suggestion: inc-l0-slowdown-writes-trigger option : CFOptions.level0_slowdown_writes_trigger action : increase"
+        ],
+        "scope": [
+            [
+                "default"
+            ]
+        ]
+    },
+    {
+        "rule": "bloom-not-enabled",
+        "conditions": [
+            "TimeSeriesCondition: bloom-not-enabled statistics: ['[]rocksdb.bloom.filter.useful.count', '[]rocksdb.bloom.filter.full.positive.count', '[]rocksdb.bloom.filter.full.true.positive.count'] behavior: evaluate_expression expression: keys[0]+keys[1]+keys[2]==0 aggregation_op: avg trigger: {'ENTITY_PLACEHOLDER': [0.0, 0.0, 0.0]}"
+        ],
+        "suggestions": [
+            "Suggestion: inc-bloom-bits-per-key option : bloom_bits action : increase suggested_values : ['2']"
+        ],
+        "scope": [
+            [
+                "ENTITY_PLACEHOLDER"
+            ],
+            [
+                "default"
+            ]
+        ]
+    },
+    {
+        "rule": "small-l0-files",
+        "conditions": [
+            "OptionCondition: small-l0-files options: ['CFOptions.max_bytes_for_level_base', 'CFOptions.level0_file_num_compaction_trigger', 'CFOptions.write_buffer_size'] expression: int(options[0])>(10*int(options[1])*int(options[2])) trigger: {'default': ['268435456', '4', '4194000']}"
+        ],
+        "suggestions": [
+            "Suggestion: dec-max-bytes-for-level-base option : CFOptions.max_bytes_for_level_base action : decrease",
+            "Suggestion: inc-write-buffer-size option : CFOptions.write_buffer_size action : increase"
+        ],
+        "scope": [
+            [
+                "default"
+            ]
+        ]
+    }
+]

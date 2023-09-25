@@ -3,9 +3,9 @@ import sys
 import subprocess
 from kv_database_be.log import logger
 from kv_database_be.constants import avail_benchmarks, avail_options
-from kv_database_be.utils import get_db_path
 
-db_dir = os.getcwd()+"/rocksdb"
+cur_dir = os.getcwd()
+db_dir = cur_dir+"/rocksdb"
 adv_dir = db_dir+"/tools/advisor"
 sys.path.append(adv_dir)
 
@@ -15,7 +15,7 @@ from advisor.db_log_parser import DatabaseLogs, DataSource
 from advisor.db_options_parser import DatabaseOptions
 from advisor.db_stats_fetcher import LogStatsParser, OdsStatsFetcher
 
-def get_advice(options = None):
+def get_advice(db_path = None):
     # Taken from rule_parser_example with minor modifications
     # initialise the RulesSpec parser
     rule_spec_parser = RulesSpec(adv_dir+"/advisor/rules.ini")
@@ -24,11 +24,11 @@ def get_advice(options = None):
 
     # initialize the DatabaseOptions object
     # db_options = DatabaseOptions(adv_dir+"/test/input_files/OPTIONS-000005") #To change
-    db_options = DatabaseOptions("/tmp/rocksdbtest-1000/dbbench/OPTIONS-000007") #To change
+    db_options = DatabaseOptions(db_path+"/OPTIONS-000007") #To change
 
     # Create DatabaseLogs object
     # db_logs = DatabaseLogs(adv_dir+"/test/input_files/LOG-0", db_options.get_column_families())
-    db_logs = DatabaseLogs("/tmp/rocksdbtest-1000/dbbench/LOG", db_options.get_column_families())
+    db_logs = DatabaseLogs(db_path+"/LOG", db_options.get_column_families())
 
     # Create the Log STATS object
     # db_log_stats = LogStatsParser(adv_dir+"/test/input_files/LOG-0", 20)
@@ -61,28 +61,6 @@ def get_advice(options = None):
         cleaned_rules.append(add_rule)
 
     return cleaned_rules
-
-def get_statistics():
-    raw_results = get_raw_results()
-
-    results = raw_results.split("\n")
-    db_path = get_db_path(results)
-    return raw_results
-
-def get_raw_results():
-    benchmark="fillseq"
-    # command = [db_dir+"/db_bench",
-    #             "--benchmarks=fillseq,stats",
-    #             "--statistics"]
-    command = [db_dir+"/db_bench",
-                "--benchmarks="+benchmark+",stats",
-                "--statistics"]
-    try:
-        result = subprocess.run(command,capture_output=True,text=True,check=True)
-        return result.stdout
-    except subprocess.CalledProcessError as e:
-        print(f"Error executing benchmark: {e}")
-        print(e.stderr)
 
 def get_avail_benchmarks():
     list_of_benchmarks = []
