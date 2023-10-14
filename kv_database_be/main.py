@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from kv_database_be.handlers import h_common, h_statistics
+from kv_database_be.handlers import h_common, h_statistics, h_advice
 from kv_database_be.log import logger
 
 app = FastAPI()
@@ -27,7 +27,7 @@ def get_stats(benchmark: str):
 @app.get("/get-advice")
 def get_adv(db_path: str):
     logger.info("Getting advice from "+db_path)
-    return h_common.get_advice(db_path)
+    return h_advice.get_advice(db_path)
 
 @app.get("/get-avail-benchmarks")
 def get_avail_bm():
