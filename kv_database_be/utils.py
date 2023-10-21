@@ -1,6 +1,18 @@
 import re
 from kv_database_be.log import logger
 
+def split_output(raw_results):
+    logger.info("Splitting RocksDB Raw Output")
+    split_on = ["** DB Stats **", "STATISTICS:"]
+    pattern = "|".join(map(re.escape, split_on))
+    sections = re.split(pattern, raw_results)
+
+    main = sections[0]
+    db_stats = sections[1]
+    statistics = sections[2]
+
+    return main, db_stats, statistics
+
 def get_key_stats(key, data_type, result):
     logger.info(f"Getting {key}")
     lines = result.strip().split('\n')
@@ -19,18 +31,6 @@ def get_db_path(result):
     start_index = line_req.index("[") + 1
     end_index = line_req.index("]", start_index)
     return line_req[start_index:end_index]
-
-def split_output(raw_results):
-    logger.info("Splitting RocksDB Raw Output")
-    split_on = ["** DB Stats **", "STATISTICS:"]
-    pattern = "|".join(map(re.escape, split_on))
-    sections = re.split(pattern, raw_results)
-
-    main = sections[0]
-    db_stats = sections[1]
-    statistics = sections[2]
-
-    return main, db_stats, statistics
 
 def prepare_db_stats(db_stats):
     logger.info("Preparing DB Stats")

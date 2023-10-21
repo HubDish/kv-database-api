@@ -2,3 +2,4 @@
 __pycache__/
 be-env/
 tmp_options.ini
+tmp_benchmark_stats.txt

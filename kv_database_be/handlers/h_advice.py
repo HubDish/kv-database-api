@@ -17,9 +17,9 @@ from advisor.db_stats_fetcher import LogStatsParser, OdsStatsFetcher
 import json
 
 def get_advice(db_path = None):
-    # raw_advice = get_raw_advice(db_path)
-    with open("sample_advice.txt","r") as file:
-        raw_advice = json.load(file)
+    raw_advice = get_raw_advice(db_path)
+    # with open("sample_advice.txt","r") as file:
+    #     raw_advice = json.load(file)
     cleaned_advice = []
 
     for rule in raw_advice:
@@ -28,7 +28,7 @@ def get_advice(db_path = None):
     return cleaned_advice
 
 def get_raw_advice(db_path = None):
-    # Taken from rule_parser_example with minor modifications
+    # Taken from RocksDB Advisor rule_parser_example with minor modifications
     # initialise the RulesSpec parser
     rule_spec_parser = RulesSpec(adv_dir+"/advisor/rules.ini")
     rule_spec_parser.load_rules_from_spec()

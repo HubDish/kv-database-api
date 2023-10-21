@@ -18,3 +18,4 @@ def create_options_file(content):
     f=open("tmp_options.ini","wb")
     f.write(content)
     f.close()
+    return True
