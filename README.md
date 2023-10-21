@@ -1,4 +1,4 @@
-# kv-database-api
+# Instructions to run
  
 To run the back-end api, ensure python3 is installed.
 1. Clone the repository into the desired folder with "git clone --recurse-submodules" to clone with existing version of RocksDB.
